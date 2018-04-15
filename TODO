@@ -1,0 +1,12 @@
+porkbind 2.0
+============
+Implement gethostbyname_r with autoconf
+Make option to disable zone transfer and recursive query tests
+Rearrange mutexes for optimal locking
+Commmand line option for RECURSIVE_QUERY_TEST_DOMAIN
+Add all CVE's to porkbind.conf (not just CERT alerts)
+..see table at bottom of http://www.isc.org/index.pl?/sw/bind/bind-security.php
+doxygen
+
+If you're interested in working on any of these bullet points please
+do not hesitate to contact me.. super@innu.org

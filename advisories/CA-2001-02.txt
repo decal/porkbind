@@ -1,0 +1,507 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+
+CERT Advisory CA-2001-02 Multiple Vulnerabilities in BIND
+
+   Original release date: January 29, 2001
+   Last revised: --
+   Source: CERT/CC
+
+   A complete revision history can be found at the end of this file.
+
+Systems Affected
+
+   Domain Name System (DNS) Servers running various versions of ISC BIND
+   (including both 4.9.x prior to 4.9.8 and 8.2.x prior to 8.2.3; 9.x is
+   not affected) and derivatives. Because the normal operation of most
+   services on the Internet depends on the proper operation of DNS
+   servers, other services could be impacted if these vulnerabilities are
+   exploited.
+
+Overview
+
+   The CERT/CC has recently learned of four vulnerabilities spanning
+   multiple versions of the Internet Software Consortium's (ISC) Berkeley
+   Internet Name Domain (BIND) server. BIND is an implementation of the
+   Domain Name System (DNS) that is maintained by the ISC. Because the
+   majority of name servers in operation today run BIND, these
+   vulnerabilities present a serious threat to the Internet
+   infrastructure.
+
+   Three of these vulnerabilities (VU#196945, VU#572183, and VU#868916)
+   were discovered by the COVERT Labs at PGP Security, who have posted an
+   advisory regarding these issues at
+
+          http://www.pgp.com/research/covert/advisories/047.asp
+
+   The fourth vulnerability (VU#325431) was discovered by Claudio
+   Musmarra.
+
+   The Internet Software Consortium has posted information about all four
+   vulnerabilities at
+
+          http://www.isc.org/products/BIND/bind-security.html
+
+I. Description
+
+   VU#196945 - ISC BIND 8 contains buffer overflow in transaction
+   signature (TSIG) handling code
+
+   During the processing of a transaction signature (TSIG), BIND 8 checks
+   for the presence of TSIGs that fail to include a valid key. If such a
+   TSIG is found, BIND skips normal processing of the request and jumps
+   directly to code designed to send an error response. Because the
+   error-handling code initializes variables differently than in normal
+   processing, it invalidates the assumptions that later function calls
+   make about the size of the request buffer.
+
+   Once these assumptions are invalidated, the code that adds a new
+   (valid) signature to the responses may overflow the request buffer and
+   overwrite adjacent memory on the stack or the heap. When combined with
+   other buffer overflow exploitation techniques, an attacker can gain
+   unauthorized privileged access to the system, allowing the execution
+   of arbitrary code. 
+
+   VU#572183 - ISC BIND 4 contains buffer overflow in nslookupComplain()
+
+   The vulnerable buffer is a locally defined character array used to
+   build an error message intended for syslog. Attackers attempting to
+   exploit this vulnerability could do so by sending a specially
+   formatted DNS query to affected BIND 4 servers. If properly
+   constructed, this query could be used to disrupt the normal operation
+   of the DNS server process, resulting in either denial of service or
+   the execution of arbitrary code. 
+
+   VU#868916 - ISC BIND 4 contains input validation error in
+   nslookupComplain()
+
+   The vulnerable buffer is a locally defined character array used to
+   build an error message intended for syslog. Attackers attempting to
+   exploit this vulnerability could do so by sending a specially
+   formatted DNS query to affected BIND 4 servers. If properly
+   constructed, this query could be used to disrupt the normal operation
+   of the DNS server process, resulting in the execution of arbitrary
+   code.
+
+   This vulnerability was patched by the ISC in an earlier version of
+   BIND 4, most likely BIND 4.9.5-P1. However, there is strong evidence
+   to suggest that some third party vendors who redistribute BIND 4 have
+   not included these changes in their BIND packages. Therefore, the
+   CERT/CC recommends that all users of BIND 4 or its derivatives base
+   their distributions on BIND 4.9.8. 
+
+   VU#325431 - Queries to ISC BIND servers may disclose environment
+   variables
+
+   This vulnerability is an information leak in the query processing code
+   of both BIND 4 and BIND 8 that allows a remote attacker to access the
+   program stack, possibly exposing program and/or environment variables.
+   This vulnerability is triggered by sending a specially formatted query
+   to vulnerable BIND servers.
+
+II. Impact
+
+   VU#196945 - ISC BIND 8 contains buffer overflow in transaction
+   signature (TSIG) handling code
+
+   This vulnerability may allow an attacker to execute code with the same
+   privileges as the BIND server. Because BIND is typically run by a
+   superuser account, the execution would occur with superuser
+   privileges. 
+
+   VU#572183 - ISC BIND 4 contains buffer overflow in nslookupComplain()
+
+   This vulnerability can disrupt the proper operation of the BIND server
+   and may allow an attacker to execute code with the privileges of the
+   BIND server. Because BIND is typically run by a superuser account, the
+   execution would occur with superuser privileges. 
+
+   VU#868916 - ISC BIND 4 contains input validation error in
+   nslookupComplain()
+
+   This vulnerability may allow an attacker to execute code with the
+   privileges of the BIND server. Because BIND is typically run by a
+   superuser account, the execution would occur with superuser
+   privileges. 
+
+   VU#325431 - Queries to ISC BIND servers may disclose environment
+   variables
+
+   This vulnerability may allow attackers to read information from the
+   program stack, possibly exposing environment variables. In addition,
+   the information obtained by exploiting this vulnerability may aid in
+   the development of exploits for VU#572183 and VU#868916.
+
+III. History
+
+   Since 1997, the CERT/CC has published twelve documents describing
+   vulnerabilities or exploitation of vulnerabilities in BIND with
+   information and advice on upgrading and preventing compromises.
+   Unfortunately, many system and network administrators still have not
+   upgraded their versions of BIND, making them susceptible to a number
+   of vulnerabilities. Prior vulnerabilities in BIND have been widely
+   exploited by intruders.
+
+   For example, on November 10, 1999, the CERT/CC published CA-1999-14,
+   which detailed multiple vulnerabilities in BIND. The CERT/CC continued
+   to receive reports of compromises based on those vulnerabilities
+   through December 2000. On April 8, 1998, the CERT/CC published
+   CA-1998-05; reports of compromises based on the vulnerabilities
+   described therein continued through November of 1998.
+
+   The following graph shows the number of incidents reported to the
+   CERT/CC regarding BIND NXT record (VU#16532) exploits after the
+   publication of CA-1999-14:
+
+       Incidents By Month Involving the BIND NXT Record Vulnerability
+                                (VU#16532) 
+
+   Based on this past experience, the CERT/CC expects that intruders will
+   quickly begin developing and using intruder tools to compromise
+   machines. It is important for IT and security managers to ensure that
+   their organizations are properly protected before the expected
+   wide-spread exploitation happens.
+
+Exploitation
+
+   The vulnerabilities described in VU#196945, VU#572183, and VU#868916
+   have been successfully exploited by COVERT Labs in a laboratory
+   environment. To the best of our knowledge, no exploits have been
+   released to the public.
+
+IV. Solution
+
+Apply a patch from your vendor
+
+   The ISC has released BIND versions 4.9.8 and 8.2.3 to address these
+   security issues. The CERT/CC recommends that users of BIND 4.9.x or
+   8.2.x upgrade to BIND 4.9.8, BIND 8.2.3, or BIND 9.1.
+
+   Because BIND 4 is no longer actively maintained, the ISC recommends
+   that users affected by this vulnerability upgrade to either BIND 8.2.3
+   or BIND 9.1. Upgrading to one of these versions will also provide
+   functionality enhancements that are not related to security.
+
+   The BIND 4.9.8 and 8.2.3 distributions can be downloaded from
+
+          ftp://ftp.isc.org/isc/bind/src/
+
+   The BIND 9.1 distribution can be downloaded from
+
+          ftp://ftp.isc.org/isc/bind9/
+
+   Appendix A contains information supplied by ISC and distributors of
+   BIND. Depending on your local processes, procedures, and expertise,
+   you may wish to obtain updates from the ISC or from an operating
+   system vendor who redistributes BIND.
+
+Use Strong Cryptography to Authenticate Services
+
+   Services and transactions that rely exclusively on the DNS system for
+   authentication are inherently weak. We encourage organizations to use
+   strong cryptography to authenicate services and transactions where
+   possible. One common use of strong cryptography is the use of SSL in
+   authenticating and encrypting electronic commerce transactions over
+   the web. In addition to this use, we encourage organizations to use
+   SSL, PGP, S/MIME, SSH, and other forms of strong cryptography to
+   distribute executable content, secure electronic mail, distribute
+   important information, and protect the confidentiality of all kinds of
+   data traversing the Internet.
+
+Use Split Horizon DNS to Minimize Impact
+
+   It may also be possible to minimize the impact of the exploitation of
+   these vulnerabilities by configuring your DNS environment to separate
+   DNS servers used for the public dissemination of information about
+   your hosts from the DNS servers used by your internal hosts to connect
+   to other hosts on the Internet. Frequently, different security polices
+   can be applied to these servers such that even if one server is
+   compromised the other server will continue to function normally. Split
+   horizon DNS configuration may also have other security benefits.
+
+References
+
+   To read more about the vulnerabilities described in this document,
+   please visit the CERT/CC Vulnerability Notes Database:
+
+   VU#196945 - ISC BIND 8 contains buffer overflow in transaction
+          signature (TSIG) handling code
+          http://www.kb.cert.org/vuls/id/196945
+
+   VU#572183 - ISC BIND 4 contains buffer overflow in nslookupComplain()
+          http://www.kb.cert.org/vuls/id/572183
+
+   VU#868916 - ISC BIND 4 contains input validation error in
+          nslookupComplain()
+          http://www.kb.cert.org/vuls/id/868916
+
+   VU#325431 - Queries to ISC BIND servers may disclose environment
+          variables
+          http://www.kb.cert.org/vuls/id/325431
+
+   To cross-reference CERT/CC VU numbers with other vendor documents via
+   CVE, please visit
+
+   VU#196945 - ISC BIND 8 contains buffer overflow in transaction
+          signature (TSIG) handling code
+          http://cve.mitre.org/cgi-bin/cvename.cgi?name=CAN-2001-0010
+
+   VU#572183 - ISC BIND 4 contains buffer overflow in nslookupComplain()
+          http://cve.mitre.org/cgi-bin/cvename.cgi?name=CAN-2001-0011
+
+   VU#868916 - ISC BIND 4 contains input validation error in
+          nslookupComplain()
+          http://cve.mitre.org/cgi-bin/cvename.cgi?name=CAN-2001-0013
+
+   VU#325431 - Queries to ISC BIND servers may disclose environment
+          variables
+          http://cve.mitre.org/cgi-bin/cvename.cgi?name=CAN-2001-0012
+
+   For information on historical issues involving BIND vulnerabilities
+   and compromises, please visit
+
+   CERT Advisory CA-2000-20 Multiple Denial-of-Service Problems in ISC
+          BIND
+          http://www.cert.org/advisories/CA-2000-20.html
+
+   CERT Advisory CA-2000-03 Continuing Compromises of DNS servers
+          http://www.cert.org/advisories/CA-2000-03.html
+
+   CERT Advisory CA-1999-14 Multiple Vulnerabilities in BIND
+          http://www.cert.org/advisories/CA-1999-14.html
+
+   CERT Advisory CA-1998-05 Multiple Vulnerabilities in BIND
+          http://www.cert.org/advisories/CA-1998-05.html
+
+   CERT Advisory CA-1997-22 BIND - The Berkeley Internet Name Daemon
+          http://www.cert.org/advisories/CA-1997-22.html
+
+   CERT Summary CS-2000-02
+          http://www.cert.org/summaries/CS-2000-02.html
+
+   CERT Summary CS-2000-01
+          http://www.cert.org/summaries/CS-2000-01.html
+
+   CERT Summary CS-1999-04
+          http://www.cert.org/summaries/CS-99-04.html
+
+   CERT Summary CS-1998-07
+          http://www.cert.org/summaries/CS-98.07.html
+
+   CERT Summary CS-1998-06
+          http://www.cert.org/summaries/CS-98.06.html
+
+   CERT Summary CS-1998-05
+          http://www.cert.org/summaries/CS-98.05.html
+
+   CERT Summary CS-1998-04
+          http://www.cert.org/summaries/CS-98.04.html
+
+   For more information on transaction signatures, please visit
+
+   RFC 2535: Domain Name System Security Extensions
+          http://www.ietf.org/rfc/rfc2535.txt
+
+   RFC 2845: Secret Key Transaction Authentication for DNS (TSIG)
+          http://www.ietf.org/rfc/rfc2845.txt
+
+Appendix A. - Vendor Information
+
+   This appendix contains information provided by vendors for this
+   advisory. When vendors report new information to the CERT/CC, we
+   update this section and note the changes in our revision history. If a
+   particular vendor is not listed below, we have not received their
+   comments.
+
+Caldera Systems
+
+   OpenLinux 2.3, eServer 2.3.1 and eDesktop 2.4 are all vulnerable.
+
+   Update packages will be provided at
+
+          ftp://ftp.calderasystems.com/pub/updates/OpenLinux/2.3
+          ftp://ftp.calderasystems.com/pub/updates/OpenLinux/2.3
+          ftp://ftp.calderasystems.com/pub/updates/eDesktop/2.4
+
+Compaq Computer Corporation
+
+COMPAQ COMPUTER CORPORATION
+- -------------------------------------------------------------------------------
+- -----
+ VU#325431  INFOLEAK
+- -------------------------------------------------------------------------------
+- -----
+ Compaq Tru64 UNIX V5.1 and V5.0 *evaluation incomplete
+ Compaq Tru64 UNIX V4.0D/F/G      *evaluation incomplete
+
+- -------------------------------------------------------------------------------
+- -----
+ VU#572183 - buffer overflow in nslookupComplain()
+ VU#868916 - input validation error in nslookupComplain()
+- -------------------------------------------------------------------------------
+- -----
+ Compaq Tru64 UNIX V5.1 and V5.0  - Not Vulnerable
+ Compaq Tru64 UNIX V4.0D/F/G        - *evaluation incomplete.
+
+- -------------------------------------------------------------------------------
+- -----
+ VU#196945 -  BIND 8 contains buffer overflow in transaction signature handling
+ code
+- -------------------------------------------------------------------------------
+- -----
+ Compaq Tru64 UNIX V5.1 and V5.0  - *evaluation incomplete
+ Compaq Tru64 UNIX V4.0D/F/G        - Not Vulnerable
+
+* At the time of writing this document, the problems identified are
+currently still under evaluation by engineering.  Compaq will provide
+notice of the completion/availability of the patches through AES
+services (DIA, DSNlink FLASH), the ** Security mailing list, and be
+available from your normal Compaq Support channel.
+
+**You may subscribe to the Security mailing list at:
+
+http://www.support.compaq.com/patches/mailing-list.shtml
+
+COMPAQ COMPUTER CORPORATION
+- -------------------------------------------------------------------------------
+- -----
+
+FreeBSD, Inc.
+
+   No supported version of FreeBSD contains BIND 4.x, so this does not
+   affect us. We current ship betas of 8.2.3 in the FreeBSD 4.x release
+   branch, and will be upgrading to 8.2.3 once it is released.
+
+Hewlett-Packard Company
+
+   None of the Bind versions of HP-UX is vulnerable to VU#196945 -
+   problem of buffer overflow in TSIG handling code.
+
+   HP's Bind 8.1.2 is vulnerable to VU#325183 (infoleak problem). Bind
+   4.9.7 is vulnerable to both VU#572183 (infoleak problem) and VU#325183
+   (nslookupComplain() buffer overflow).
+
+   Fixes are in process.
+
+IBM Corporation
+
+   VU#325431 - Queries to ISC BIND servers may disclose environment
+   variables
+
+   IBM's AIX operating system may be vulnerable to this "inverse query"
+   exploitation. We are working to understand the technical nature of
+   this exploit; when done, we expect to verify AIX's vulnerability. We
+   will provide updates to this page as we progress [in] studying this
+   exploit.
+
+   VU#572183 - ISC BIND 4 contains buffer overflow in nslookupComplain()
+
+   IBM's AIX operating system is vulnerable to this potential exploit in
+   named4. We are working to fix this quickly and we intend to post an
+   emergency fix ASAP.
+
+   VU#868916 - ISC BIND 4 contains input validation error in
+   nslookupComplain()
+
+   IBM's AIX operating system is vulnerable to this potential exploit,
+   and is working quickly toward a fix.
+
+Sun Microsystems, Inc.
+
+   Solaris(tm) versions 2.4, 2.5, 2.5.1 and 2.6 contain revisions of BIND
+   4
+
+   Solaris(tm) versions 7 and 8 contain BIND 8.1.2
+
+   Sun is working to address the issues in VU#868916, VU#572183 and
+   VU#325431 and will be issuing a Sun Security Bulletin when further
+   information is available.
+
+   VU#196945 is not present in currently supported versions of Solaris.
+     _________________________________________________________________
+
+   The CERT/CC thanks the COVERT Labs at PGP Security for discovering and
+   analyzing three of these vulnerabilities (VU#196945, VU#572183, and
+   VU#868916) and Claudio Musmarra for discovering the infoleak
+   vulnerability (VU#325431). We also thank the Internet Software
+   Consortium for providing patches to fix the vulnerabilities.
+     _________________________________________________________________
+
+   This document was written by Jeffrey P. Lanza, Cory Cohen, Ian Finlay,
+   and Shawn Hernan.
+   ______________________________________________________________________
+
+   This document is available from:
+   http://www.cert.org/advisories/CA-2001-02.html
+   ______________________________________________________________________
+
+CERT/CC Contact Information
+
+   Email: cert@cert.org
+          Phone: +1 412-268-7090 (24-hour hotline)
+          Fax: +1 412-268-6989
+          Postal address:
+          CERT Coordination Center
+          Software Engineering Institute
+          Carnegie Mellon University
+          Pittsburgh PA 15213-3890
+          U.S.A.
+
+   CERT personnel answer the hotline 08:00-20:00 EST(GMT-5) / EDT(GMT-4)
+   Monday through Friday; they are on call for emergencies during other
+   hours, on U.S. holidays, and on weekends.
+
+Using encryption
+
+   We strongly urge you to encrypt sensitive information sent by email.
+   Our public PGP key is available from
+
+   http://www.cert.org/CERT_PGP.key
+
+   If you prefer to use DES, please call the CERT hotline for more
+   information.
+
+Getting security information
+
+   CERT publications and other security information are available from
+   our web site
+
+   http://www.cert.org/
+
+   To subscribe to the CERT mailing list for advisories and bulletins,
+   send email to majordomo@cert.org. Please include in the body of your
+   message
+
+   subscribe cert-advisory
+
+   * "CERT" and "CERT Coordination Center" are registered in the U.S.
+   Patent and Trademark Office.
+   ______________________________________________________________________
+
+   NO WARRANTY
+   Any material furnished by Carnegie Mellon University and the Software
+   Engineering Institute is furnished on an "as is" basis. Carnegie
+   Mellon University makes no warranties of any kind, either expressed or
+   implied as to any matter including, but not limited to, warranty of
+   fitness for a particular purpose or merchantability, exclusivity or
+   results obtained from use of the material. Carnegie Mellon University
+   does not make any warranty of any kind with respect to freedom from
+   patent, trademark, or copyright infringement.
+     _________________________________________________________________
+
+   Conditions for use, disclaimers, and sponsorship information
+
+   Copyright 2001 Carnegie Mellon University.
+
+   Revision History
+January 29, 2001:  Initial release
+
+-----BEGIN PGP SIGNATURE-----
+Version: PGP for Personal Privacy 5.0
+Charset: noconv
+
+iQCVAwUBOnV6WQYcfu8gsZJZAQEwBgP/Q4wJSPaRUHkZyAV0LNEO6DPijeAplZ4u
+SYbgjXRlSlnnb3msGF3ZNKk0jp7kV2eF5i+Xu79RKrlohHl4iQ5Tgj1G9XcWdbcW
+wtI4jV5Ozs2UzNHOWuJp9hbfyj/wnjUErHjsFTHT+dzEAaWQSgsl1GFbXHRR0hNh
+okXWHhmPXiM=
+=jiwF
+-----END PGP SIGNATURE-----

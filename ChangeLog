@@ -1,0 +1,36 @@
+porkbind-0.99b
+--------------
+First release
+
+porkbind-1.1
+------------
+Fixed some minor memory allocation problems.
+Fixed a vercmp()/vcheck() bug.
+	Thanks to Sean Trifero <sean@innu.org> -- solar@IRC for discovery. 
+Added pthread code.
+Added -f run-time option.
+Added zone transfer test.
+Implemented recursive mode.
+Included examples in usage function.
+Lots of miscellaneous additions and improvements.
+
+porkbind-1.2
+------------
+Print out version string every time even if it's not parsable
+Removed the -f command line option
+Updated porkbind.conf with all the latest CERT advisories for BIND
+Modified the banner
+Made a seperate directory for CERT advisory text files
+Ran GNU indent on all the source files
+Added dnsqry.h as dependency in Makefile
+
+porkbind-1.3
+------------
+Wrote in-a-bind shell script that scans random domain names from DMOZ
+Implemented recursive query testing
+Changed porkbind.conf to use CVE numbers in addition to CERT alerts
+Modified text displayed on stdout to make it more parsable
+Licensed with GNU Lesser General Public License
+Fixed timeout/concurrency/memory corruption bugs
+Fixed improper comparison of alpha/beta version numbering bug
+Added typecasts to silence compiler warnings

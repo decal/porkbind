@@ -1,0 +1,402 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+=============================================================================
+CERT* Advisory CA-97.22
+Original issue date: August 13, 1997
+Last Revised: May 26, 1998
+	      Updated vendor information for Sun Microsystems
+
+	      A complete revision history is at the end of this file.
+
+Topic: BIND - the Berkeley Internet Name Daemon
+- -----------------------------------------------------------------------------
+
+            *** This advisory supersedes CA-96.02. ***
+
+Several vulnerabilities in the Berkeley Internet Name Daemon (BIND) have been
+fixed in the current version of BIND. One of those vulnerabilities is now
+being exploited, a vulnerability that results in cache poisoning (malicious or
+misleading data from a remote name server is saved [cached] by another name
+server).
+
+The vulnerability has been fixed in BIND version 4.9.6; however, we recommend
+upgrading according to our instructions in Section III.B or installing vendor
+patches (see Appendix A).  We also urge you to take the additional precautions
+described in Section III.C.
+
+We will update this advisory as we receive additional information. Please
+check our advisory files regularly for updates that relate to your site.
+
+- -----------------------------------------------------------------------------
+
+I.   Description
+
+     The Berkeley Internet Name Daemon (BIND) is an implementation of the
+     Domain Name Service (DNS) written primarily for UNIX Systems. BIND
+     consists of three parts:
+
+     * The client part. This part contains subroutine libraries used by
+       programs that require DNS services. Example clients of these libraries
+       are telnet, the X Windows System, and ssh (the secure shell). The
+       client part consists of subroutine libraries, header files, and manual
+       pages.
+
+     * The server part. This part contains the name server daemon (named) and
+       its support program (named-xfer). These programs provide one source of
+       the data used for mapping between host names and IP addresses. When
+       appropriately configured, these name server daemons can interoperate
+       across a network (the Internet for example) to provide the mapping
+       services for that network. The server part consists of the daemon, its
+       support programs and scripts, and manual pages.
+
+     * The tools part. This part contains various tools for interrogating
+       name servers in a network. They use the client part to extract
+       information from those servers. The tools part consists of these
+       interrogation tools and manual pages.
+
+     As BIND has matured, several vulnerabilities in the client, server,
+     and tools parts have been fixed. Among these is server cache poisoning.
+     Cache poisoning occurs when malicious or misleading data received from
+     a remote name server is saved (cached) by another name server. This
+     "bad" data is then made available to programs that request the cached
+     data through the client interface.
+
+     Analysis of recent incidents reported to the CERT Coordination Center
+     has shown that the cache poisoning technique is being used to adversely
+     affect the mapping between host names and IP addresses. Once this
+     mapping has been changed, any information sent between hosts on a
+     network may be subjected to inspection, capture, or corruption.
+
+     Although the new BIND distributions do address important security
+     problems, not all known problems are fixed. In particular, several
+     problems can be fixed only with the use of cryptographic authentication
+     techniques. Implementing and deploying this solution is non-trivial;
+     work on this task is currently underway within the Internet community.
+
+II.  Impact
+
+     The mapping between host names and IP addresses may be changed. As
+     a result, attackers can inspect, capture, or corrupt the information
+     exchanged between hosts on a network.
+
+III. Solution
+
+
+Install a patch from your vendor or implement the "best practice" workaround
+we recommend in Section III.B. In either case, take the extra precautions
+described in Section III.C.
+
+     A.  Obtain and install a patch for this problem.
+
+         Information from vendors can be found in Appendix A of this advisory;
+         we will update the appendix as we receive more information.
+
+
+     B.  Until you are able to install the appropriate patch, we recommend
+         the following workaround.
+
+         The "best practice" for operating the publicly available BIND
+         system can be either:
+
+         * a heterogeneous solution that involves first installing BIND
+           release 4.9.6 and then release 8.1.1, or
+
+         * a homogeneous solution that involves installing only BIND release
+           8.1.1.
+
+         In the paragraphs below, we describe how to determine which solution
+         you should use.
+
+         Note: Although the security posture in BIND version 8.1.1 is
+               identical to that of version 4.9.6, version 8.1.1 is the
+               version that will continue to undergo changes and improvements,
+               hence our selection of its use as the "best practice."
+
+         1. Shared Object Client Subroutine Library
+
+            If your system and its programs rely on the shared object client
+            subroutine library that comes with some releases of BIND, probably
+            named libresolv.so, then you need the shared object subroutine
+            library and other client software from release 4.9.6. (As of
+            this writing, BIND version 8 does not yet support the client
+            part as a shared object library.) This client software is
+            available at
+
+              ftp://ftp.isc.org/isc/bind/src/4.9.6/bind-4.9.6-REL.tar.gz
+                MD5 (bind-4.9.6-REL.tar.gz) = 76dd66e920ad0638c8a37545a6531594
+
+            Follow the instructions in the file named INSTALL in the top-level
+            directory.
+
+            After installing this client part, install the server and tool
+            parts from release 8.1.1. This software is available at
+
+              ftp://ftp.isc.org/isc/bind/src/8.1.1/bind-src.tar.gz
+                MD5 (bind-src.tar.gz) = 7487b8d647edba2053edc1cda0c6afd0
+
+            Follow the instructions in the src/INSTALL file. Note that
+            this version will install the client libraries and header files
+            in a non-standard place, /usr/local/lib and /usr/local/include.
+            The src/INSTALL file describes what is being installed and
+            where.
+
+            When you install release 4.9.6 first, its client, server, and
+            tools parts will be installed in the production locations. When
+            you then install release 8.1.1, the server and tools parts will be
+            overwritten by that release's versions, but the 4.9.6 client part
+            will not.
+
+         2. No Shared Object Client Subroutine Library
+
+            If you do not need the shared object client subroutine library,
+            then you need only upgrade to release 8.1.1. This software is
+            available at
+
+              ftp://ftp.isc.org/isc/bind/src/8.1.1/bind-src.tar.gz
+                MD5 (bind-src.tar.gz) = 7487b8d647edba2053edc1cda0c6afd0
+
+            Follow the instructions in src/INSTALL. Note that the client
+            subroutine library and header files are installed in
+            /usr/local/lib and /usr/local/include respectively. To use
+            these when building other systems, you will need to refer to
+            their installed locations.
+
+
+        Note: ftp://ftp.isc.org/isc/bind/src/ is mirrored in
+              Germany at ftp://ftp.cert.dfn.de/pub/tools/net/bind/src/
+
+        As new versions of BIND are released in the future, you will be able
+        to find them at these sites, as well as other mirrors. You can also
+        check ftp://info.cert.org/pub/latest_sw_versions/ for version
+        information.
+
+
+     C. Take additional precautions.
+
+        As good security practice in general, filter at a router all
+        name-based authentication services so that you do not rely on DNS
+        information for authentication. This includes the services rlogin, rsh
+        (rcp), xhost, NFS, and any other locally installed services that
+        provide trust based on domain name information.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Appendix A - Vendor Information
+
+Below is a list of the vendors who have provided information for this
+advisory. We will update this appendix as we receive additional information.
+If you do not see your vendor's name, the CERT/CC did not hear from that
+vendor. Please contact the vendor directly.
+
+Berkeley Software Design, Inc. (BSDI)
+=====================================
+Patches from BSDI
+
+        ftp://ftp.bsdi.com/bsdi/patches/patches-2.1/U210-038
+        md5 checksum: 8ce46cd2d1aff3b294a84ae54e82a824
+
+        ftp://ftp.bsdi.com/bsdi/patches/patches-3.0/M300-025
+        md5 checksum: d7b5c6094089955cd1af207dab05bc0f
+
+Cray Research - A Silicon Graphics Company
+===========================================
+  Cray Research has determined that the version of BIND shipped with all
+  current releases of Unicos and Unicos/mk are susceptible to the problem
+  described in this advisory.  We are currently working on upgrading our
+  version of BIND to the 4.9.6 release.
+
+
+Digital Equipment Corporation
+=============================
+xref CASE ID: SSRT0494U
+
+ At the time of writing this document, patches(binary kits) are in
+ progress and final patch testing is expected to begin soon.
+ Digital will provide notice of the completion/availability of the
+ patches through AES services (DIA, DSNlink FLASH) and be
+ available from your normal Digital Support channel.
+
+                                DIGITAL EQUIPMENT CORPORATION   AUG/97
+                                -----------------------------   ------
+
+Hewlett-Packard Company
+=======================
+   HP is vulnerable. Patches in process.
+
+
+IBM Corporation
+===============
+  IBM is currently working on the following APARs which will be
+  available soon:
+
+    AIX 4.1:  IX70236
+    AIX 4.2:  IX70237
+
+  To Order
+  --------
+    APARs may be ordered using Electronic Fix Distribution (via FixDist)
+    or from the IBM Support Center.  For more information on FixDist,
+    reference URL:
+
+       http://service.software.ibm.com/aixsupport/
+
+    or send e-mail to aixserv@austin.ibm.com with a subject of "FixDist".
+
+  IBM and AIX are registered trademarks of International Business Machines
+  Corporation.
+
+
+NEC Corporation
+===============
+   NEC is vulnerable.  The systems affected by this problem
+   are as follows:
+
+        UX/4800
+        UX/4800(64)
+        EWS-UX/V(Rel4.2MP)
+        EWS-UX/V(Rel4.2)
+        UP-UX/V(Rel4.2MP)
+
+   Patches are in progress and will be made available from
+   ftp://ftp.meshnet.or.jp/pub/48pub/security.
+
+
+Siemens-Nixdorf Informationssysteme AG
+======================================
+  We are investigating this problem and will provide updated information
+  for this advisory when it becomes available.
+
+
+The Santa Cruz Operation
+========================
+   The following SCO operating systems are vulnerable:
+
+   - SCO Open Desktop/Open Server 3.0, SCO UNIX 3.2v4
+   - SCO OpenServer 5.0
+   - SCO UnixWare 2.1
+
+   SCO CMW+ 3.0 is not vulnerable as bind is not supported on CMW+ platforms.
+
+   SCO has made an interim fix available for anonymous ftp:
+
+        ftp://ftp.sco.com/SSE/sse008.ltr.Z - cover letter
+        ftp://ftp.sco.com/SSE/sse008.tar.Z - replacement binaries
+
+   The fix includes binaries for the following SCO operating systems:
+
+   - SCO Open Desktop/Open Server 3.0, SCO UNIX 3.2v4
+   - SCO OpenServer 5.0
+   - SCO UnixWare 2.1
+
+
+Sun Microsystems
+================
+ 
+The following patches relate to the BIND vulnerability:
+ 
+        SunOS version   Patch Id
+        -------------   --------
+ 
+        5.6             105755-03
+        5.6_x86         105756-03
+        5.5.1           103663-11
+        5.5.1_x86       103664-11
+        5.5             103667-09
+        5.5_x86         103668-09
+        5.4             102479-11
+        5.4_x86         102480-09
+        5.3             101359-08
+ 
+Sun recommended and security patches (including checksums) are available from:
+ 
+        http://sunsolve.sun.com/sunsolve/pubpatches/patches.html
+
+
+- -----------------------------------------------------------------------------
+
+The CERT Coordination Center staff thanks Paul Vixie and Wolfgang Ley for
+their contributions to this advisory.
+
+- -----------------------------------------------------------------------------
+
+If you believe that your system has been compromised, contact the CERT
+Coordination Center or your representative in the Forum of Incident Response
+and Security Teams (see http://www.first.org/team-info/).
+
+
+CERT/CC Contact Information
+- ----------------------------
+Email    cert@cert.org
+
+Phone    +1 412-268-7090 (24-hour hotline)
+                CERT personnel answer 8:30-5:00 p.m. EST(GMT-5) / EDT(GMT-4)
+                and are on call for emergencies during other hours.
+
+Fax      +1 412-268-6989
+
+Postal address
+         CERT Coordination Center
+         Software Engineering Institute
+         Carnegie Mellon University
+         Pittsburgh PA 15213-3890
+         USA
+
+Using encryption
+   We strongly urge you to encrypt sensitive information sent by email. We can
+   support a shared DES key or PGP. Contact the CERT/CC for more information.
+   Location of CERT PGP key
+         ftp://info.cert.org/pub/CERT_PGP.key
+
+Getting security information
+   CERT publications and other security information are available from
+        http://www.cert.org/
+        ftp://info.cert.org/pub/
+
+   CERT advisories and bulletins are also posted on the USENET newsgroup
+        comp.security.announce
+
+   To be added to our mailing list for advisories and bulletins, send
+   email to
+        cert-advisory-request@cert.org
+   In the subject line, type
+        SUBSCRIBE  your-email-address
+
+- ------------------------------------------------------------------------------
+
+Copyright 1997 Carnegie Mellon University. Conditions for use, disclaimers,
+and sponsorship information can be found in
+http://www.cert.org/legal_stuff.html and ftp://ftp.cert.org/pub/legal_stuff .
+If you do not have FTP or web access, send mail to cert@cert.org with
+"copyright" in the subject line.
+
+CERT is registered in the U.S. Patent and Trademark Office.
+
+
+- ---------------------------------------------------------------------------
+
+This file: ftp://info.cert.org/pub/cert_advisories/CA-97.22.bind
+           http://www.cert.org
+               click on "CERT Advisories"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Revision history
+May 26, 1998   Updated vendor information for Sun Microsystems
+
+Sept. 30, 1997 Updated copyright statement
+
+Sept. 19, 1997 Appendix A - Added information for BSDI.
+
+Aug. 20, 1997  Introduction - Clarified that 4.9.6 is not vulnerable.
+               Section III - Added a note why sites should upgrade to 8.1.1.
+
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: PGP for Personal Privacy 5.0
+Charset: noconv
+
+iQA/AwUBOBTADFr9kb5qlZHQEQIJbwCgpth5mvj+DupkJkqRLbq1qScgqrkAni+S
+Efyk/EQFwFzui9drj3dE7Ab9
+=U3t8
+-----END PGP SIGNATURE-----

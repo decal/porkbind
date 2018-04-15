@@ -1,0 +1,710 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+=============================================================================
+CERT* Advisory CA-98.05
+Original issue date: April 08, 1998
+Last Revised:	November 16, 1998
+		Added vendor information for Data General
+
+        A complete revision history is at the end of this file.
+
+
+Topic: Multiple Vulnerabilities in BIND
+        1. Inverse Query Buffer Overrun in BIND 4.9 and BIND 8 Releases
+        2. Denial-of-Service Vulnerabilities in BIND 4.9 and BIND 8 Releases
+        3. Denial-of-Service Vulnerability in BIND 8 Releases
+
+- ----------------------------------------------------------------------------
+
+I.   Description
+
+     This advisory describes three distinct problems in BIND. Topic 1
+     describes a vulnerability that may allow a remote intruder to gain root
+     access on your name server or to disrupt normal operation of your name
+     server. Topics 2 and 3 deal with vulnerabilities that can allow an
+     intruder to disrupt your name server. Detailed descriptions of each
+     problem and its solutions are included in the individual sections on each
+     topic.
+
+II.  Impact
+
+     Topic 1: A remote intruder can gain root-level access to your name server.
+
+     Topics 2 and 3: A remote intruder is able to disrupt normal operation of
+     your name server.
+
+III. Solution
+
+     All three problems can be fixed by upgrading to the latest version of
+     BIND, which may be available from your vendor (see Appendix A of this
+     advisory). Questions about the availability of patches from your vendor
+     should be directed to your vendor.
+
+     Additionally, the Internet Software Consortium has announced new
+     publicly available versions of BIND on the BIND WWW page
+     (http://www.isc.org/bind.html) and on the USENET newsgroup
+     comp.protocols.dns.bind.
+
+     Additionally, patches are provided for Topics 1 and 3, along with steps
+     to take until you can apply the patch or upgrade to the latest version of
+     BIND.
+
+*************************************************************************
+Topic 1: Inverse Query Buffer Overrun in BIND 4.9 and BIND 8 Releases
+*************************************************************************
+
+1.A. Description
+
+     BIND 4.9 releases prior to BIND 4.9.7 and BIND 8 releases prior to 8.1.2
+     do not properly bounds check a memory copy when responding to an inverse
+     query request. An improperly or maliciously formatted inverse query on a
+     TCP stream can crash the server or allow an attacker to gain root
+     privileges.
+
+1.B. Determining if your system is vulnerable
+
+     The inverse query feature is disabled by default, so only the systems
+     that have been explicitly configured to allow it are vulnerable.
+
+     BIND 8
+        Look at the "options" block in the configuration file (typically
+        /etc/named.conf). If there is a "fake-iquery yes;" line, then the
+        server is vulnerable.
+
+     BIND 4.9
+        Look at the "options" lines in the configuration file (typically
+        /etc/named.boot). If there is a line containing "fake-iquery", then
+        the server is vulnerable.
+
+        In addition, unlike BIND 8, inverse query support can be enabled when
+        the server is compiled. Examine conf/options.h in the source. If the
+        line #defining INVQ is not commented out, then the server is
+        vulnerable.
+
+1.C. What To Do
+
+     To address this problem, you can disable inverse queries, upgrade to BIND
+     8.1.2 now that it is available, or apply the patch (see below for more
+     information on the patch). We urge you to disable inverse queries until
+     you can take one of the other steps.
+
+     Disabling inverse queries
+     -------------------------
+
+     BIND 8
+        Disable inverse queries by editing named.conf so that either there
+        is no "fake-iquery" entry in the "options" block or the entry is
+        "fake-iquery no;"
+
+     BIND 4.9
+        Disable inverse queries by editing named.boot, removing any
+        "fake-iquery" entries on "options" lines. Look at conf/options.h
+        in the source. If INVQ has been defined, comment it out and then
+        rebuild and reinstall the server.
+
+     Note: Disabling inverse query support can break ancient versions of
+           nslookup. If nslookup fails, replace it with a version from any
+           BIND 4.9 or BIND 8 distribution.
+
+     Fixing the Inverse Query Code
+     -----------------------------
+
+     BIND 8
+        Upgrade to BIND 8.1.2 now that it is available
+        (http://www.isc.org/new-bind.html) or apply the patch available from:
+
+           ftp://ftp.cert.org/pub/cert_advisories/Patches/CA-98.05_Topic.1_BIND8_patch.txt
+
+        This file is not PGP signed.  It has the following MD5 checksum:
+
+           MD5 (CA-98.05_Topic.1_BIND8_patch.txt) = 12fc9d395ff987b1aad17a882ccd7840
+
+
+     BIND 4.9
+        Upgrade to BIND 4.9.7 now that it is available
+        (http://www.isc.org/new-bind.html) or apply the patch available from:
+
+           ftp://ftp.cert.org/pub/cert_advisories/Patches/CA-98.05_Topic.1_BIND4.9_patch.txt
+
+        This file is not PGP signed.  It has the following MD5 checksum:
+
+           MD5 (CA-98.05_Topic.1_BIND4.9_patch.txt) = 32da0db1c27e4d484e6fcb7901267c2f
+
+
+        Notes:
+
+          (1) We are asking sites to retrieve the patches via FTP rather
+              than including them in the advisory since our experience is
+              that some mail handling systems translate tabs into spaces.
+              This prevents the patch(1) program from working properly.
+
+          (2) We have not PGP signed the files since our experience is that
+              some implementations of PGP during the extraction process
+              will strip spaces from some lines containing whitespace only.
+              This may prevent the patch(1) program from working properly.
+
+
+**************************************************************************
+Topic 2: Denial-of-Service Vulnerabilities in BIND 4.9 and BIND 8 Releases
+**************************************************************************
+
+2.A. Description
+
+     BIND 4.9 releases prior to BIND 4.9.7 and BIND 8 releases prior to 8.1.2
+     do not properly bounds check many memory references in the server and the
+     resolver. An improperly or maliciously formatted DNS message can cause
+     the server to read from invalid memory locations, yielding garbage record
+     data or crashing the server. Many DNS utilities that process DNS messages
+     (e.g., dig, nslookup) also fail to do proper bounds checking.
+
+2.B. Determining if your system is vulnerable
+
+     Any system running BIND 4.9 prior to 4.9.7 or BIND 8 prior to 8.1.2 is
+     vulnerable.
+
+2.C. What To Do
+
+     There are no workarounds for these problems.
+
+     BIND 8
+        Upgrade to BIND 8.1.2 now that it is available.
+
+     BIND 4.9
+        Upgrade to BIND 4.9.7 now that it is available.
+
+
+**************************************************************************
+Topic 3: Denial-of-Service Vulnerability in BIND 8 Releases
+**************************************************************************
+
+3.A. Description
+
+     Assume that the following self-referential resource record is in the
+     cache on a name server:
+
+        foo.example.    IN      A       CNAME   foo.example.
+
+     The actual domain name used does not matter; the important thing is
+     that the target of the CNAME is the same name. The record could be in
+     the cache either because the server was authoritative for it or
+     because the server is recursive and someone asked for it. Once this
+     record is in the cache, issuing a zone transfer request using its name
+     (e.g., "dig @my_nameserver foo.example. axfr") will cause the server
+     to abort().
+
+     Most sites will not contain such a record in their configuration
+     files.  However, it is possible for an attacker to engineer such a
+     record into the cache of a vulnerable nameserver and thus cause a
+     denial of service.
+
+3.B. Determining if your system is vulnerable
+
+     If the BIND 8 server is not recursive and does not fetch glue, then
+     the problem can be exploited only if the self-referential resource
+     record is in a zone for which the server is authoritative.
+
+     If the global zone transfer ACL in the options block has been set to
+     deny access and has no self-referential CNAMEs in its authoritative
+     zones, then the server is not vulnerable.
+
+     Otherwise, the server is vulnerable. The nameserver is recursive by
+     default, fetches glue by default, and the default global transfer ACL
+     allows all hosts; so many BIND 8 servers will be vulnerable to this
+     problem.
+
+     (Note: the in.named(8) man page mentions that sending a SIGINT to the
+     in.named process will dump the current data base and cache to, by
+     default, /var/tmp/named_dump.db. Some sites may find this useful in
+     looking for self-referential CNAMEs.  Please see the in.named(8) man
+     page for further details.)
+
+
+3.C. What To Do
+
+     To address this problem, you can apply the workaround described below,
+     upgrade to BIND 8.1.2, or apply the patch provided at the end of this
+     section. Until you can upgrade or apply the patch, we urge you to use the
+     workaround.
+
+     Workaround
+     ----------
+
+     First set the global zone transfer ACL to deny access to all hosts by
+     adding the following line to the "options" block:
+
+           allow-transfer { none; };
+
+     Next, explicitly authorize zone transfers for each authoritative zone.
+     For example, if the server was authoritative for "example", adding
+
+           allow-transfer { any; };
+
+     to the "zone" statement for "example" would allow anyone to transfer
+     "example".
+
+     None of the domains for which the server is authoritative should have
+     self-referential CNAMEs.
+
+     Fixing the Problem
+     ------------------
+
+     Upgrade to BIND 8.1.2, now that it is available, or apply the patch
+     available from the following URL to the BIND 8.1.1 source:
+
+       ftp://ftp.cert.org/pub/cert_advisories/Patches/CA-98.05_Topic.3_BIND8.1.1_patch.txt
+
+        This file is not PGP signed.  It has the following MD5 checksum:
+
+           MD5 (CA-98.05_Topic.3_BIND8.1.1_patch.txt) = 33f9dc2eaf221dd48553f490259c2a8b
+
+        Notes:
+
+          (1) We are asking sites to retrieve the patches via FTP rather
+              than including them in the advisory since our experience is
+              that some mail handling systems translate tabs into spaces.
+              This prevents the patch(1) program from working properly.
+
+          (2) We have not PGP signed the files since our experience is that
+              some implementations of PGP during the extraction process
+              will strip spaces from some lines containing whitespace only.
+              This may prevent the patch(1) program from working properly.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Appendix A - Vendor Information
+
+Below is a list of the vendors who have provided information for this
+advisory. We will update this appendix as we receive additional information.
+If you do not see your vendor's name, the CERT/CC did not hear from that
+vendor. Please contact the vendor directly.
+
+
+Berkeley Software Design, Inc. (BSDI)
+- -------------------------------------
+
+  1.      BSD/OS 3.0/3.1 AS SHIPPED is not vulnerable.
+          Sites wishing to enable fake-iquery can install mod
+          M310-025, available at http://www.bsdi.com
+
+  2.      BSDI will issue a 3.1 mod when a fix is available.
+
+  3.      BSD/OS is not vulnerable, since we ship bind 4.9.6
+
+
+
+Caldera Corporation
+- -------------------
+
+Workaround for Topic 1:
+        Disable inverse queries by editing named.conf so that either
+        there is no "fake-iquery" entry in the "options" block, or
+        so that the entry is "fake-iquery no;"
+
+Workaround for Topic 2:
+
+        A workaround is to set the global zone transfer ACL to deny
+        access to all hosts by adding the following line to the
+        "options" block allow-transfer { none; };
+        Next, explicitly authorize zone transfers for each authoritative
+        zone.
+
+        For example, if the server was authoritative for "example", adding
+        allow-transfer { any; }; to the "zone" statement for "example"
+        would allow anyone to transfer "example".
+
+        None of the domains the server is authoritative for should have
+        self-referential CNAMEs.
+
+Correction for both Topics:
+     The proper solution is to Upgrade to the bind-8.1.1-5 packages.
+        They can be found on Caldera's FTP site at:
+                ftp://ftp.caldera.com/pub/OpenLinux/updates/1.2/006/RPMS
+        The corresponding source code can be found at:
+                ftp://ftp.caldera.com/pub/OpenLinux/updates/1.2/006/SRPMS
+        The MD5 checksums (from the "md5sum" command) for these packages
+        are:
+
+            b63ace6eab6eee5cf0608c8a245b5e27  bind-8.1.1-5.i386.rpm
+            4123b0167f5d5769a87cd2d9542a74b4  bind-doc-8.1.1-5.i386.rpm
+            e1d506cbcc87d7c1de915d94d03281b1  bind-utils-8.1.1-5.i386.rpm
+            eec24c0f816244c4729281867fcebbab  bind-8.1.1-5.src.rpm
+
+        Upgrade with the following commands:
+                rpm -q bind && rpm -U bind-8.1.1-5.i386.rpm
+                rpm -q bind-utils && rpm -U bind-utils-8.1.1-5.i386.rpm
+                rpm -q bind-doc && rpm -U bind-doc-8.1.1-5.i386.rpm
+
+        This and other Caldera security resources are located at:
+                http://www.caldera.com/tech-ref/security/
+
+
+
+Data General
+- ------------
+This problem is fixed in revision R4.20MU04 of DG/UX. The following patches
+are available for earlier revisions:
+
+Revision        Patch Number
+- -----------------------------------
+R4.20MU01       tcpip_R4.20MU01.p10
+R4.20MU02       tcpip_R4.20MU02.p09
+R4.20MU03       tcpip_R4.20MU03.p01
+R4.11MU05       tcpip_R4.11MU05.p09
+R4.12MU03       tcpip_R4.12MU03.p02
+
+
+
+Digital Equipment Corporation
+- -----------------------------
+
+  Digital is investigating this problem.
+
+
+
+FreeBSD, Inc.
+- -------------
+
+  We ship with INVQ not defined. This makes us resistent against the first
+  vulnerability. This is true for all release after 2.2.0 (2.1.* releases
+  are vulnerable but should be upgraded anyway).  As we do not yet ship
+  BIND 8, we are also not vulnerable to the 3rd vulnerability.
+
+  We advise everyone to upgrade to BIND 4.9.7.
+
+
+
+Hewlett-Packard Company
+- -----------------------
+
+  See Hewlett-Packard Security Bulletin "Security Vulnerability in
+  BIND on HP-UX", HPSBUX9808-083, dated August 19, 1998, for details
+  concerning the availability of patches.
+
+
+  Hewlett Packard's HP-UX patches/Security Bulletins/Security patches are
+  available via email and/or WWW (via the browser of your choice) on HP's
+  Electronic Support Center (ESC).
+
+  To subscribe to automatically receive future NEW HP Security Bulletins from
+  the HP ESC Digest service via electronic mail, do the following:
+
+  From your Web browser, access the URL:
+
+        http://us-support.external.hp.com (US,Canada,Asia-Pacific, and
+        Latin-America)
+
+        http://europe-support.external.hp.com  (Europe)
+
+   Login with your user ID and password (or register for one).
+     Remember to save the User ID assigned to you, and your password.
+     Once you are in the Main Menu:
+     To -subscribe- to future HP Security Bulletins,
+       click on "Support Information Digests".
+     To -review- bulletins already released from the main Menu,
+       click on the "Technical Knowledge Database (Security Bulletins
+     only)".
+     Near the bottom of the next page, click on "Browse the HP Security
+     Bulletin Archive".
+     Once in the archive there is another link to our current Security
+     Patch Matrix.  Updated daily, this matrix is categorizes security
+     patches by platform/OS release, and by bulletin topic.
+
+   To report new security vulnerabilities, send email to
+
+           security-alert@hp.com
+
+   Please encrypt any exploit information using the security-alert
+   PGP key, available from your local key server, or by sending a
+   message with a -subject- (not body) of 'get key' (no quotes) to
+   security-alert@hp.com.
+
+
+IBM Corporation
+- ---------------
+
+  The version of bind shipped with AIX is vulnerable and the following
+  APARs will be available soon:
+
+    AIX 4.1.x: IX76958  (fix for Topic 1 only)
+    AIX 4.2.x: IX76959  (fix for Topic 1 only)
+    AIX 4.3.x: IX76960  (fix for Topic 1 and 3 only)
+    AIX 4.3.x: IX76962  (fix for Topic 1, 2, and 3.  This is bind 8.1.2.)
+
+  Until the official fixes are available, a temporary patch can be found
+  at:
+
+    ftp://aix.software.ibm.com/aix/efixes/security
+
+    File                sum               md5
+    ====================================================================
+    named.415.tar.Z     64980   157    0e795380b84bf29385d2d946d10406cb
+    named.421.tar.Z     44963   157    15a9a006abf4a9d0a0d3210f16d619e5
+    named4.430.tar.Z    48236   115    8377b14f74e207707154a9677906f20a
+    named8.430.tar.Z    51175   160    e2db14b7055a7424078456bfbfd9bf2d
+
+    Detached PGP signatures are also available with a ".asc" extension.
+
+  IBM and AIX are registered trademarks of International Business Machines
+  Corporation.
+
+
+Internet Software Consortium
+- ----------------------------
+
+The Internet Software Consortium has announced BIND version 8.1.2 and
+BIND version 4.9.7.
+
+If you are running BIND 8.1.1 or 8.1 you want to upgrade to 8.1.2.  If
+you are still running BIND-4 rather than BIND-8, you need the security patches
+contained in 4.9.7. But, you should really just run BIND-8.
+
+The security fixes included in these releases fix a stack overrun that could
+occur if inverse query support was enabled, and a number of denial of service
+attacks where malformed packets could cause the server to crash.
+
+Links to the kits are available on at:
+
+        http://www.isc.org/new-bind.html
+
+
+NEC Corporation
+===============
+
+  Topic1 - Some systems are vulnerable.  Patches will be available
+           soon, especially for UX/4800 R11.x and R13.x.
+
+  Topic2 - Some systems are vulnerable.  Patches will be available
+           soon after the release of bind-4.9.7, especially for
+           UX/4800 R11.x and R13.x.
+
+  Topic3 - We do not ship BIND 8 with our products so we are not
+           vulnerable to this problem.
+
+  Patches will be available from ftp://ftp.meshnet.or.jp/pub/48pub/security.
+
+
+
+The NetBSD Project
+- ------------------
+
+  The first problem can be fixed in NetBSD 1.3, 1.3.1, and -current prior
+  to 19980408 with the supplied BIND 4.9.6 patch. A patch will be made
+  available for the second problem shortly (alternatively, upgrading to
+  BIND 4.9.7 or 8.1.2 when available will also solve this problem.)  NetBSD
+  is not affected by the third problem.
+
+
+Red Hat Software, Inc.
+- ----------------------
+
+  Red Hat fixes will be available at:
+
+
+  Red Hat 5.0
+  -------------
+
+  i386:
+  rpm -Uvh ftp://ftp.redhat.com/updates/5.0/i386/bind-4.9.6-7.i386.rpm
+
+  alpha:
+  rpm -Uvh ftp://ftp.redhat.com/updates/5.0/alpha/bind-4.9.6-7.alpha.rpm
+
+  Red Hat 4.2
+  -------------
+
+  i386:
+  rpm -Uvh ftp://ftp.redhat.com/updates/4.2/i386/bind-4.9.6-1.1.i386.rpm
+
+  alpha:
+  rpm -Uvh ftp://ftp.redhat.com/updates/4.2/alpha/bind-4.9.6-1.1.alpha.rpm
+
+  SPARC:
+  rpm -Uvh ftp://ftp.redhat.com/updates/4.2/sparc/bind-4.9.6-1.1.sparc.rpm
+
+
+
+The Santa Cruz Operation, Inc.
+- ------------------------------
+
+  The following SCO products are vulnerable:
+
+  - SCO Open Desktop/Open Server 3.0, SCO UNIX 3.2v4
+  - SCO OpenServer 5.0 (also SCO Internet FastStart)
+  - SCO UnixWare 2.1
+  - SCO UnixWare 7
+
+  SCO CMW+ 3.0 is not vulnerable as BIND/named is not supported on
+  CMW+ platforms.
+
+  Binary versions of BIND 4.9.7 will be available shortly from the
+  SCO ftp site:
+
+  ftp://ftp.sco.com/SSE/sse012.ltr - cover letter
+  ftp://ftp.sco.com/SSE/sse012.tar.Z - replacement binaries
+
+  The fix includes binaries for the following SCO operating systems:
+
+  - SCO Open Desktop/Open Server 3.0, SCO UNIX 3.2v4
+  - SCO OpenServer 5.0
+  - SCO UnixWare 2.1
+  - SCO UnixWare 7
+
+  For the latest security bulletins and patches for SCO products,
+  please refer to http://www.sco.com/security/ .
+
+
+
+Silicon Graphics, Inc.
+- ----------------------
+
+   Silicon Graphics Inc. issued Security Advisory, " IRIX BIND DNS
+   Vulnerabilities," 19980603-02-PX,  August 6, 1998.
+
+   Patches are available via anonymous FTP and your service/support
+   provider.
+
+   The SGI anonymous FTP site is sgigate.sgi.com (204.94.209.1) or its
+   mirror, ftp.sgi.com.  Security information and patches can be found in
+   the ~ftp/security and ~ftp/patches directories, respectfully.
+
+   For subscribing to the wiretap mailing list and other SGI security
+   related information, please refer to the Silicon Graphics Security
+   Headquarters website located at:
+
+                http://www.sgi.com/Support/security
+
+Sun Microsystems, Inc.
+- ----------------------
+
+   Topic 1: Patches will be produced for Solaris 5.3, 5.4, 5.5, 5.5.1
+            and 5.6.
+
+   Topic 2: Patches will be produced for Solaris 5.3, 5.4, 5.5, 5.5.1
+            and 5.6.
+
+   Topic 3: Bug fix will be integrated in the upcoming release of
+            Solaris.
+
+
+- ----------------------------------------------------------------------------
+
+The CERT Coordination Center thanks Bob Halley and Paul Vixie of Vixie
+Enterprises, who provided most of the text of this advisory.
+
+Reminder:
+
+  The Internet Software Consortium will announce new publicly available
+  versions of BIND on the BIND WWW page (http://www.isc.org/bind.html) and
+  on the USENET newsgroup comp.protocols.dns.bind.
+
+- ----------------------------------------------------------------------------
+
+If you believe that your system has been compromised, contact the CERT
+Coordination Center or your representative in the Forum of Incident Response
+and Security Teams (FIRST). See http://www.first.org/team-info/.
+
+We strongly urge you to encrypt any sensitive information you send by email.
+The CERT Coordination Center can support a shared DES key and PGP. Contact
+the CERT staff for more information.
+
+Location of CERT PGP key
+         ftp://ftp.cert.org/pub/CERT_PGP.key
+
+
+CERT Contact Information
+- ------------------------
+Email    cert@cert.org
+
+Phone    +1 412-268-7090 (24-hour hotline)
+                CERT personnel answer 8:30-5:00 p.m. EST
+                (GMT-5)/EDT(GMT-4), and are on call for
+                emergencies during other hours.
+
+Fax      +1 412-268-6989
+
+Postal address
+        CERT Coordination Center
+        Software Engineering Institute
+        Carnegie Mellon University
+        Pittsburgh PA 15213-3890
+        USA
+
+Using encryption
+   We strongly urge you to encrypt sensitive information sent by email. We can
+   support a shared DES key or PGP. Contact the CERT/CC for more information.
+   Location of CERT PGP key
+         ftp://ftp.cert.org/pub/CERT_PGP.key
+
+Getting security information
+   CERT publications and other security information are available from
+        http://www.cert.org/
+        ftp://ftp.cert.org/pub/
+
+   CERT advisories and bulletins are also posted on the USENET newsgroup
+        comp.security.announce
+
+   To be added to our mailing list for advisories and bulletins, send
+   email to
+        cert-advisory-request@cert.org
+   In the subject line, type
+        SUBSCRIBE  your-email-address
+
+- ---------------------------------------------------------------------------
+UPDATES
+
+June 18, 1998
+
+For additional information about attacks related to "named" (domain name
+server software, part of BIND) please refer to the following Special
+CERT Summary (and references therein):
+
+        http://www.cert.org/summaries/CS-98.05.html
+
+- ---------------------------------------------------------------------------
+
+Copyright 1998 Carnegie Mellon University. Conditions for use, disclaimers,
+and sponsorship information can be found in
+http://www.cert.org/legal_stuff.html and ftp://ftp.cert.org/pub/legal_stuff .
+If you do not have FTP or web access, send mail to cert@cert.org with
+"copyright" in the subject line.
+
+* CERT is registered U.S. Patent and Trademark Office.
+
+- ---------------------------------------------------------------------------
+
+This file: ftp://ftp.cert.org/pub/cert_advisories/CA-98.05.bind_problems
+           http://www.cert.org/pub/alerts.html
+
+- ---------------------------------------------------------------------------
+Revision history
+
+Nov. 16, 1998  Added vendor information for Data General
+Aug. 21, 1998  Updated vendor informaton for HP and SGI.
+June 19, 1998  Updated vendor informaton for SGI.
+June 18, 1998  Added a pointer to more information in the UPDATES section.
+May 21, 1998   Updates were made to the following portions of this advisory:
+               III. Solutions
+               Topic 1: Inverse Query Buffer Overrun in BIND 4.9 and
+               BIND 8. Releases
+                 1.C. What To Do
+                 Fixing the Inverse Query Code, Bind 8 and Bind 4.9
+               Topic 2: Denial-of-Service Vulnerabilities in BIND 4.9 and
+               BIND 8 Releases
+                 2.C. What To Do
+               Topic 3: Denial-of-Service Vulnerability in BIND 8 Releases
+                 3.C. What To Do
+                 Fixing the Problem
+               Appendix A - Updated vendor information for Internet Software
+               Consortium
+Apr. 16, 1998  Appendix A - Updated vendor information for Caldera Corporation.
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: PGP for Personal Privacy 5.0
+Charset: noconv
+
+iQA/AwUBOBTBolr9kb5qlZHQEQJv6QCfZEPa1VU6Gb1G2rXRaOLe1DeAn5UAoJXm
+GvAju57EmlHNVXx4KOCAzdRf
+=zkzV
+-----END PGP SIGNATURE-----

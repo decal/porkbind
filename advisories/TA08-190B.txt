@@ -1,0 +1,183 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+                National Cyber Alert System
+
+           Technical Cyber Security Alert TA08-190B
+
+
+Multiple DNS implementations vulnerable to cache poisoning
+
+   Original release date: July 08, 2008
+   Last revised: --
+   Source: US-CERT
+
+
+Systems Affected
+
+   Systems implementing:
+     * Caching DNS resolvers
+     * DNS stub resolvers
+
+   Affected systems include both client and server systems, and any other
+   networked systems that include this functionality.
+
+
+Overview
+
+   Deficiencies in the DNS protocol and common DNS implementations facilitate
+   DNS cache poisoning attacks. Effective attack techniques against these
+   vulnerabilities have been demonstrated.
+
+
+I. Description
+
+   DNS cache poisoning (sometimes referred to as cache pollution) is an attack
+   technique that allows an attacker to introduce forged DNS information into
+   the cache of a caching nameserver. The general concept has been known for
+   some time, and a number of inherent deficiencies in the DNS protocol and
+   defects in common DNS implementations that facilitate DNS cache poisoning
+   have previously been identified and described in public literature. Examples
+   of these vulnerabilities can be found in Vulnerability Note VU#800113.
+
+   Recent research into these and other related vulnerabilities has produced
+   extremely effective exploitation methods to achieve cache poisoning. Tools
+   and techniques have been developed that can reliably poison a domain of the
+   attacker's  choosing on most current implementations. As a result, the
+   consensus  of  DNS  software  implementers is to implement source port
+   randomization in their resolvers as a mitigation.
+
+   US-CERT  is  tracking  this  issue as VU#800113. This reference number
+   corresponds to CVE-2008-1447.
+
+
+II. Impact
+
+   An attacker with the ability to conduct a successful cache poisoning attack
+   can cause a nameserver's clients to contact the incorrect, and possibly
+   malicious, hosts for particular services. Consequently, web traffic, email,
+   and other important network data can be redirected to systems under the
+   attacker's control.
+
+
+III. Solution
+
+Apply a patch from your vendor
+
+   Patches have been released by a number of vendors to implement source port
+   randomization in the nameserver. This change significantly reduces the
+   practicality of cache poisoning attacks. Please see the Systems Affected
+   section of Vulnerability Note VU#800113 for additional details for specific
+   vendors.
+
+   As mentioned above, stub resolvers are also vulnerable to these attacks.
+   Stub resolvers that will issue queries in response to attacker behavior, and
+   may  receive  packets  from  an  attacker,  should  be patched. System
+   administrators should be alert for patches to client operating systems that
+   implement port randomization in the stub resolver.
+
+Workarounds
+
+   Restrict access
+   Administrators, particularly those who are unable to apply a patch, can
+   limit exposure to this vulnerability by restricting sources that can ask for
+   recursion. Note that restricting access will still allow attackers with
+   access to authorized hosts to exploit this vulnerability.
+
+   Filter traffic at network perimeters
+   Because the ability to spoof IP addresses is necessary to conduct these
+   attacks, administrators should take care to filter spoofed addresses at the
+   network perimeter. IETF Request for Comments (RFC) documents RFC 2827, RFC
+   3704, and RFC 3013 describe best current practices (BCPs) for implementing
+   this defense. It is important to understand your network's configuration and
+   service requirements before deciding what changes are appropriate.
+
+   Run a local DNS cache
+   In lieu of strong port randomization characteristics in a stub resolver,
+   administrators can protect their systems by using local caching full-service
+   resolvers, both on the client systems and on servers that are topologically
+   close  on  the  network  to the client systems. This should be done in
+   conjunction with the network segmentation and filtering strategies mentioned
+   above.
+
+   Disable recursion
+   Disable recursion on any nameserver responding to DNS requests made by
+   untrusted systems.
+
+   Implement source port randomization
+   Vendors that implement DNS software are encouraged to review IETF Internet
+   Draft, "Measures for making DNS more resilient against forged answers," for
+   additional information about implementing mitigations in their products.
+   This document is a work in progress and may change prior to its publication
+   as an RFC, if it is approved.
+
+
+IV. References
+
+     * US-CERT Vulnerability Note VU#800113 -
+       <http://www.kb.cert.org/vuls/id/800113>
+     * US-CERT Vulnerability Note VU#484649 -
+       <http://www.kb.cert.org/vuls/id/484649>
+     * US-CERT Vulnerability Note VU#252735 -
+       <http://www.kb.cert.org/vuls/id/252735>
+     * US-CERT Vulnerability Note VU#927905 -
+       <http://www.kb.cert.org/vuls/id/927905>
+     * US-CERT Vulnerability Note VU#457875 -
+       <http://www.kb.cert.org/vuls/id/457875>
+     * Internet Draft: Measures for making DNS more resilient against forged
+       answers -
+       <http://tools.ietf.org/html/draft-ietf-dnsext-forgery-resilience>
+     * RFC 3833 - <http://tools.ietf.org/html/rfc3833>
+     * RFC 2827 - <http://tools.ietf.org/html/rfc2827>
+     * RFC 3704 - <http://tools.ietf.org/html/rfc3704>
+     * RFC 3013 - <http://tools.ietf.org/html/rfc3013>
+     * Microsoft Security Bulletin MS08-037 -
+       <http://www.microsoft.com/technet/security/bulletin/ms08-037.mspx>
+     * Internet     Systems    Consortium    BIND    Vulnerabilities    -
+       <http://www.isc.org/sw/bind/bind-security.php>
+
+ ____________________________________________________________________
+
+   US-CERT thanks Dan Kaminsky of IOActive and Paul Vixie of Internet Systems
+   Consortium (ISC) for notifying us about this problem and for helping us to
+   construct this advisory.
+ ____________________________________________________________________
+
+   The most recent version of this document can be found at:
+
+     <http://www.us-cert.gov/cas/techalerts/TA08-190B.html>
+ ____________________________________________________________________
+
+   Feedback can be directed to US-CERT Technical Staff. Please send
+   email to <cert@cert.org> with "TA08-190B Feedback VU#800113" in the
+   subject.
+ ____________________________________________________________________
+
+   For instructions on subscribing to or unsubscribing from this
+   mailing list, visit <http://www.us-cert.gov/cas/signup.html>.
+ ____________________________________________________________________
+
+   Produced 2008 by US-CERT, a government organization.
+
+   Terms of use:
+
+     <http://www.us-cert.gov/legal.html>
+ ____________________________________________________________________
+
+
+   Revision History
+
+   July 8, 2008: Initial release
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+
+iQEVAwUBSHPRlXIHljM+H4irAQLzsgf/SHKWDnJ+/OI42x+gbgKTXCjKffPOYicl
+Sruqe4kCR3k0OuEZS90VsvhaSuiWV1GvASbwLDGTjfh1Q7jZU3g4GMY/DEcZXerF
+vGC/NiOuaoWfjLkQsOkJKIReKqcDZEOVQD7PIIxVYYZJn8u99X/JSGQ/KMe8h5x+
+CzBVepk06FvRnT3+y21YECnMRoTzxTmqbLqm1lH9OnyRZ+ORoE4QBUJvN69EB4fO
+15JF+y8ZKcGJaczMM+mdNOfaQcQAHZ1B8zTQlBfm1L35gtjnjhvZAwHtde/E0sl6
+vGaDtbGJ/IPRS5b5y/mXReOl1ExrMb0VyWneM3Ddcdo7X5iB892AUg==
+=22We
+-----END PGP SIGNATURE-----

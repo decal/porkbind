@@ -1,0 +1,385 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+
+CERT Advisory CA-2002-31 Multiple Vulnerabilities in BIND
+
+   Original release date: November 14, 2002
+   Last revised: --
+   Source: CERT/CC
+
+   A complete revision history can be found at the end of this file.
+
+Systems Affected
+
+     * Systems running various versions of BIND 4 and BIND 8
+
+       Because  the  normal  operation  of  most services on the Internet
+       depends  on  the  proper  operation of DNS servers, other services
+       could be affected if these vulnerabilities are exploited.
+
+Overview
+
+   Multiple vulnerabilities with varying impacts have been found in BIND,
+   the  popular  domain  name  server and client library software package
+   from the Internet Software Consortium (ISC).
+
+   Some  of  these  vulnerabilities may allow remote attackers to execute
+   arbitrary  code  with  the  privileges  of  the  user  running  named,
+   (typically   root),  or  with  the  privileges  of  vulnerable  client
+   applications. The other vulnerabilities will allow remote attackers to
+   disrupt  the  normal  operation  of DNS name service running on victim
+   servers.
+
+I. Description
+
+   Multiple  vulnerabilities  have  been found in BIND (Berkeley Internet
+   Name Domain). Some of these vulnerabilities (VU#852283, VU#844360) may
+   allow  remote  attackers to execute arbitrary code with the privileges
+   of  the  user running named, typically root. The other vulnerabilities
+   (VU#229595,  VU#581682)  will  allow  remote  attackers to disrupt the
+   normal operation of your name server, possibly causing a crash.
+
+BIND DNS Server Vulnerabilities
+
+VU#852283 - Cached malformed SIG record buffer overflow
+
+   This  vulnerability  is  a buffer overflow in named. It can occur when
+   responses   are  constructed  using  previously-cached  malformed  SIG
+   records.  (SIG records are typically associated with cryptographically
+   signed  DNS  data.)  Exploitation  of  the  vulnerability  can lead to
+   arbitrary code execution as the named uid, typically root.
+
+   The following versions of BIND are affected:
+
+   - BIND versions 4.9.5 to 4.9.10
+   - BIND versions 8.1, 8.2 to 8.2.6, and 8.3.0 to 8.3.3
+
+VU#229595 - Overly large OPT record assertion
+
+   ISC  BIND  8  fails  to  properly  handle DNS lookups for non-existent
+   sub-domains  when  overly large OPT resource records are appended to a
+   query.  When  a non-existent domain (NXDOMAIN) response is constructed
+   by  a  victim  nameserver, an assertion may be triggered if the client
+   passes  a large UDP buffer size. This assertion will cause the running
+   named to exit.
+
+   The following versions of BIND are affected:
+   
+    - BIND versions 8.3.0 to 8.3.3
+
+VU#581682 - ISC BIND 8 fails to properly de-reference cache SIG RR elements
+with invalid expiry times from the internal database
+
+   ISC's description of this vulnerability states:
+
+   It  is  possible  to de-reference a NULL pointer for certain signature
+   expire values. 
+
+   The following versions of BIND are affected:
+
+   - BIND versions 8.2 to 8.2.6
+   - BIND versions 8.3.0 to 8.3.3.
+
+BIND DNS Resolver Vulnerabilities
+
+VU#844360 - Domain Name System (DNS) stub resolver libraries vulnerable to
+buffer overflows via network name or address lookups
+
+   An  attacker  could  execute arbitrary code with the privileges of the
+   application  that  made  the request or cause a denial of service. The
+   attacker would need to control the contents of DNS responses, possibly
+   by spoofing responses or gaining control of a DNS server.
+
+   These  vulnerabilities  are  distinct  from  the  issues  discussed in
+   CA-2002-19.  The following DNS stub resolver libraries are known to be
+   affected:
+
+   - BIND 4.9.2 through 4.9.10
+
+   The status of other resolver libraries derived from BIND 4 such as BSD
+   libc,  GNU glibc, and those used by System V UNIX systems is currently
+   unknown. Additionally, these issues are mapped to CVE as follows.
+
+   VU#852283 - CAN-2002-1219
+   VU#229595 - CAN-2002-1220
+   VU#581682 - CAN-2002-1221
+   VU#844360 - CAN-2002-0029
+
+II. Impact
+
+VU#852283 - Cached malformed SIG record buffer overflow
+
+   A  remote attacker could execute arbitrary code on the nameserver with
+   the privileges of the named uid, typically root.
+
+VU#229595 - Overly large OPT record assertion
+
+   A  remote  attacker  can  disrupt  the  normal  operation of your name
+   server, possibly causing a crash.
+
+VU#581682 - ISC BIND 8 fails to properly de-reference cache SIG RR elements
+with invalid expiry times from the internal database
+
+   A  remote  attacker  can  disrupt  the  normal  operation of your name
+   server, possibly causing a crash.
+
+VU#844360 - Domain Name System (DNS) stub resolver libraries vulnerable to
+buffer overflows via network name or address lookups
+
+   An  attacker  could  execute arbitrary code with the privileges of the
+   application  that  made  the request or cause a denial of service. The
+   attacker would need to control the contents of DNS responses, possibly
+   by spoofing responses or gaining control of a DNS server.
+
+III. Solution
+
+Apply a patch from your vendor.
+
+   Appendix A contains information provided by vendors for this advisory.
+   As  vendors report new information to the CERT/CC, we will update this
+   section  and note the changes in our revision history. If a particular
+   vendor  is  not  listed  below,  we  have not received their comments.
+   Please contact your vendor directly.
+
+   If  a vendor patch is not available, you may wish to consider applying
+   the patches ISC has produced:
+
+   BIND 8.3.3 - http://www.isc.org/products/BIND/patches/bind833.diff
+
+   BIND 8.2.6 - http://www.isc.org/products/BIND/patches/bind826.diff
+
+   BIND 4.9.10 - http://www.isc.org/products/BIND/patches/bind4910.diff
+
+   For  VU#844360, the BIND 4 libresolv buffer overflows, an upgrade to a
+   corrected version of the DNS resolver libraries will be required.
+
+   Note  that DNS resolver libraries can be used by multiple applications
+   on  most  systems.  It  may  be necessary to upgrade or apply multiple
+   patches and then recompile statically linked applications.
+
+   Applications  that  are  statically  linked  must  be recompiled using
+   patched  resolver  libraries. Applications that are dynamically linked
+   do  not  need  to  be recompiled; however, running services need to be
+   restarted in order to use the patched resolver libraries.
+
+   System  administrators  should  consider  the  following  process when
+   addressing this issue:
+
+    1. Patch or obtain updated resolver libraries.
+    2. Restart  any  dynamically  linked  services  that use the resolver
+       libraries.
+    3. Recompile  any statically linked applications using the patched or
+       updated resolver libraries.
+
+    Workarounds
+
+      VU#852283 - Cached malformed SIG record buffer overflow
+
+      VU#229595 - Overly large OPT record assertion
+
+      VU#581682 - ISC BIND 8 fails to properly dereference cache SIG RR
+      elements with invalid expiry times from the internal database
+
+   One  potential  workaround to limit exposure to the vulnerabilities in
+   named  is  to  disable  recursion  on any nameserver responding to DNS
+   requests  made  by  untrusted  systems.  As  mentioned in "Securing an
+   Internet Name Server":
+
+     Disabling  recursion  puts  your  name servers into a passive mode,
+     telling  them never to send queries on behalf of other name servers
+     or resolvers. A totally non-recursive name server is protected from
+     cache  poisoning, since it will only answer queries directed to it.
+     It  doesn't  send  queries,  and  hence  doesn't  cache  any  data.
+     Disabling recursion can also prevent attackers from bouncing denial
+     of  services  attacks off your name server by querying for external
+     zones.
+
+   Non-recursive   nameservers   should   be   much   more  resistant  to
+   exploitation of the server vulnerabilites listed above.
+
+    Additional Countermeasures
+
+   ISC  recommends upgrading to BIND version 9.2.1. BIND version 9.2.1 is
+   available from: http://www.isc.org/products/BIND/bind9.html.
+
+   Note  that  the  upgrade  from  previous  versions of BIND may require
+   additional site reconfiguration.
+
+Appendix A. - Vendor Information
+
+   This  appendix  contains  information  provided  by  vendors  for this
+   advisory.  As  vendors  report new information to the CERT/CC, we will
+   update this section and note the changes in our revision history. If a
+   particular  vendor  is  not  listed  below, we have not received their
+   comments.
+
+    Conectiva
+
+   Conectiva  Linux  6.0  is  affected  by  this.  Updated  packages  are
+   available at our ftp server:
+
+ ftp://atualizacoes.conectiva.com.br/6.0/RPMS/bind-8.2.6-1U60_2cl.i386.rpm
+ ftp://atualizacoes.conectiva.com.br/6.0/RPMS/bind-chroot-8.2.6-1U60_2cl.i386.rpm
+ ftp://atualizacoes.conectiva.com.br/6.0/RPMS/bind-devel-8.2.6-1U60_2cl.i386.rpm
+ ftp://atualizacoes.conectiva.com.br/6.0/RPMS/bind-devel-static-8.2.6-1U60_2cl.i386.rpm
+ ftp://atualizacoes.conectiva.com.br/6.0/RPMS/bind-doc-8.2.6-1U60_2cl.i386.rpm
+ ftp://atualizacoes.conectiva.com.br/6.0/RPMS/bind-utils-8.2.6-1U60_2cl.i386.rpm
+
+   An  advisory about this vulnerability is pending and should be sent to
+   our security mailing list and published in our web site during the day
+   (Nov 14th).
+
+    FreeBSD
+
+   Please see FreeBSD-SA-02:43.bind.
+
+    Hewlett-Packard Company
+
+   SOURCE: Hewlett-Packard Company Software Security Response team x-ref:
+   SSRT2408
+
+   At  the  time  of  writing this document, Hewlett Packard is currently
+   investigating  the  potential impact to HP's released Operating System
+   software  products.  As  further information becomes available HP will
+   provide  notice  of  the availability of any necessary patches through
+   standard  security  bulletin  announcements and be available from your
+   normal HP Services support channel.
+
+    MontaVista Software
+
+   MontaVista ships BIND 9, thus is not vulnerable to these advisories.
+
+    Nominum, Inc.
+
+   Nominum  "Foundation"  Authoritative Name Server (ANS) is not affected
+   by  this vulnerability. Also, Nominum "Foundation" Caching Name Server
+   (CNS)  is not affected by this vulnerability. Nominum's commercial DNS
+   server  products,  which  are  part of Nominum "Foundation" IP Address
+   Suite,  are not based on BIND and do not contain any BIND code, and so
+   are not affected by vulnerabilities discovered in any version of BIND.
+
+    Openwall Project
+
+   BIND  4.9.10-OW2  includes  the patch provided by ISC and thus has the
+   two  vulnerabilities affecting BIND 4 fixed. Previous versions of BIND
+   4.9.x-OW  patches,  if used properly, significantly reduced the impact
+   of the "named" vulnerability. The patches are available at their usual
+   location:
+
+   http://www.openwall.com/bind/
+
+   A  patch  against  BIND  4.9.11 will appear as soon as this version is
+   officially  released,  although it will likely be effectively the same
+   as the currently available 4.9.10-OW2. It hasn't been fully researched
+   whether  the  resolver  code  in  glibc, and in particular on Openwall
+   GNU/*/Linux,  shares  any  of  the  newly  discovered  BIND 4 resolver
+   library vulnerabilities. Analysis is in progress.
+
+    Red Hat Inc.
+
+   Older  releases  (6.2,  7.0) of Red Hat Linux shipped with versions of
+   BIND  which  may  be  vulnerable  to  these  issues  however a Red Hat
+   security   advisory   in   July   2002   upgraded  all  our  supported
+   distributions to BIND 9.2.1 which is not vulnerable to these issues.
+
+   All  users who have BIND installed should ensure that they are running
+   these updated versions of BIND.
+
+   http://rhn.redhat.com/errata/RHSA-2002-133.html Red Hat Linux
+   http://rhn.redhat.com/errata/RHSA-2002-119.html Advanced Server 2.1
+
+Appendix B. - References
+
+    1. "Securing an Internet Name Server" -
+       http://www.cert.org/archive/pdf/dns.pdf
+    2. "Internet  Security  Systems  Security  Advisory - Multiple Remote
+       Vulnerabilities in BIND4 and BIND8" -
+       http://bvlive01.iss.net/issEn/delivery/xforce/alertdetail.jsp?oid=
+       21469
+     "BIND Vulnerabilities" -
+       http://www.isc.org/products/BIND/bind-security.html
+     "RFC2671    -    Extension    Mechanisms    for   DNS   (EDNS0)"   -
+       ftp://ftp.isi.edu/in-notes/rfc2671.txt
+     _________________________________________________________________
+
+   Internet  Security  Systems  publicly  reported  the  following issues
+   VU#852283, VU#229595, and VU#581682.
+
+   We thank ISC for their cooperation.
+     _________________________________________________________________
+
+   Author: Ian A. Finlay.
+   ______________________________________________________________________
+
+   This document is available from:
+   http://www.cert.org/advisories/CA-2002-31.html
+   ______________________________________________________________________
+
+CERT/CC Contact Information
+
+   Email: cert@cert.org
+          Phone: +1 412-268-7090 (24-hour hotline)
+          Fax: +1 412-268-6989
+          Postal address:
+          CERT Coordination Center
+          Software Engineering Institute
+          Carnegie Mellon University
+          Pittsburgh PA 15213-3890
+          U.S.A.
+
+   CERT/CC   personnel   answer  the  hotline  08:00-17:00  EST(GMT-5)  /
+   EDT(GMT-4)  Monday  through  Friday;  they are on call for emergencies
+   during other hours, on U.S. holidays, and on weekends.
+
+    Using encryption
+
+   We  strongly  urge you to encrypt sensitive information sent by email.
+   Our public PGP key is available from
+   http://www.cert.org/CERT_PGP.key
+
+   If  you  prefer  to  use  DES,  please  call the CERT hotline for more
+   information.
+
+    Getting security information
+
+   CERT  publications  and  other security information are available from
+   our web site
+   http://www.cert.org/
+
+   To  subscribe  to  the CERT mailing list for advisories and bulletins,
+   send  email  to majordomo@cert.org. Please include in the body of your
+   message
+
+   subscribe cert-advisory
+
+   *  "CERT"  and  "CERT  Coordination Center" are registered in the U.S.
+   Patent and Trademark Office.
+   ______________________________________________________________________
+
+   NO WARRANTY
+   Any  material furnished by Carnegie Mellon University and the Software
+   Engineering  Institute  is  furnished  on  an  "as is" basis. Carnegie
+   Mellon University makes no warranties of any kind, either expressed or
+   implied  as  to  any matter including, but not limited to, warranty of
+   fitness  for  a  particular purpose or merchantability, exclusivity or
+   results  obtained from use of the material. Carnegie Mellon University
+   does  not  make  any warranty of any kind with respect to freedom from
+   patent, trademark, or copyright infringement.
+     _________________________________________________________________
+
+   Conditions for use, disclaimers, and sponsorship information
+
+   Copyright 2002 Carnegie Mellon University.
+
+   Revision History
+
+November 14, 2002:  Initial release
+
+-----BEGIN PGP SIGNATURE-----
+Version: PGP 6.5.8
+
+iQCVAwUBPdNOWWjtSoHZUTs5AQE4mAQAh6sFUqi/31ddeUc249b/oqXuHve7WThj
+NAYXdX34QBKg9iwVrxTGzkH/0AAzDdD9JnLXPCwfalb8w46BOm8ejR954kClrvx+
+T9FjNS1srRz+/8LMLaZ4orY12SvCXXTRSoS1+Ai+U5Z1FvZrQpZtNBetRVOS7CN8
+Yobf5hqgXd8=
+=YlT7
+-----END PGP SIGNATURE-----
