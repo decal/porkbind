@@ -1,6 +1,7 @@
+<pre>
 PorkBind (Nameserver security scanner) v1.3        `----,\    )
 by Derek Callaway 08 Aug 2008                       `--==\\  /
-http://innu.org/~super                               `--==\\/
+<http://innu.org/~super>                              `--==\\/
                                                  .-~~~~-.Y|\\_
                                               @_/        /  66\_
                                                 |    \   \   _(")
@@ -18,6 +19,7 @@ Tested on FreeBSD 7.0 and Linux 2.6.
 Much thanks to Albitz and Liu for the excellent coverage of resolver library
 routines in their book, _DNS and BIND_.
 
-axfrtest.c was originally written by JimJones.
+`axfrtest.c` was originally written by JimJones.
 
-Please send bugs, comments, 0day, etc. to super@innu.org.
+Please send bugs, comments, 0day, etc. to <super@innu.org>.
+</pre>
