@@ -2,13 +2,13 @@ CC 	= cc
 FLAGS	= -O2 -Wall
 OFLAGS 	= -c -pthread # -DDEBUG
 # You may have to add -lpthread here
-LIBS	= -pthread 
+LIBS	= -pthread -lresolv
 OBJS    = axfrtest.o main.o chkver.o genver.o vercmp.o skiptodata.o skipname.o \
 	  recurtest.o report.o vcheck.o usage.o vexit.o spin.o
 EXE     = porkbind
 all: $(EXE)
 $(EXE): $(OBJS)
-	$(CC) $(FLAGS) -o $(EXE) $(OBJS) $(LIBS) || $(CC) $(FLAGS) -o $(EXE) $(OBJS) $(LIBS) -lresolv
+	$(CC) $(FLAGS) -o $(EXE) $(OBJS) $(LIBS)
 main.o: main.c dnsqry.h
 	$(CC) $(FLAGS) $(OFLAGS) main.c
 axfrtest.o: axfrtest.c dnsqry.h
