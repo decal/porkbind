@@ -41,9 +41,9 @@ report(struct servers *llp, const char *config)
 			vexit("fopen");
 		}
 	}
-	else if (!(cf = fopen("porkbind.conf", "r")))
+	else if (!(cf = fopen(PORKBIND_CONF, "r")))
 	{
-		fprintf(stderr,"Unable to open: porkbind.conf!\n");
+		fprintf(stderr,"Unable to open: " PORKBIND_CONF "!\n");
 
 		vexit("fopen");
 	}
