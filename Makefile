@@ -1,5 +1,6 @@
 CC 	= cc
-FLAGS	= -O2 -Wall
+PORKBIND_CONF = porkbind.conf
+FLAGS	= -O2 -Wall -DPORKBIND_CONF=\"$(PORKBIND_CONF)\"
 OFLAGS 	= -c -pthread # -DDEBUG
 # You may have to add -lpthread here
 LIBS	= -pthread 
